@@ -9,10 +9,15 @@ import {
   Send, 
   Image as ImageIcon,
   MessageSquare,
-  Trash2 
+  Trash2,
+  MessageCircle,
+  Camera,
+  Video,
+  Share2
 } from 'lucide-react';
 
 type Dialect = 'EGYPTIAN' | 'KUWAITI' | 'UAE' | 'SAUDI';
+type ContentType = 'WHATSAPP_ANNOUNCEMENT' | 'INSTAGRAM_POST' | 'INSTAGRAM_REEL' | 'FACEBOOK_POST' | 'FACEBOOK_VIDEO';
 
 interface Message {
   id: string;
@@ -27,6 +32,7 @@ interface Chat {
   title: string;
   messages: Message[];
   dialect: Dialect;
+  contentType: ContentType;
   createdAt: Date;
 }
 
@@ -37,13 +43,31 @@ const DIALECTS = {
   SAUDI: 'Saudi Arabic',
 };
 
+const CONTENT_TYPES = {
+  WHATSAPP_ANNOUNCEMENT: 'WhatsApp Announcement',
+  INSTAGRAM_POST: 'Instagram Post',
+  INSTAGRAM_REEL: 'Instagram Reel',
+  FACEBOOK_POST: 'Facebook Post',
+  FACEBOOK_VIDEO: 'Facebook Video',
+};
+
+const CONTENT_TYPE_ICONS: Record<ContentType, React.ReactNode> = {
+  WHATSAPP_ANNOUNCEMENT: <MessageCircle className="w-4 h-4" />,
+  INSTAGRAM_POST: <Camera className="w-4 h-4" />,
+  INSTAGRAM_REEL: <Video className="w-4 h-4" />,
+  FACEBOOK_POST: <Share2 className="w-4 h-4" />,
+  FACEBOOK_VIDEO: <Video className="w-4 h-4" />,
+};
+
 export default function GeneratePage() {
   const { user } = useAuth();
   const [chats, setChats] = useState<Chat[]>([]);
   const [activeChat, setActiveChat] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   const [dialect, setDialect] = useState<Dialect>('EGYPTIAN');
+  const [contentType, setContentType] = useState<ContentType>('WHATSAPP_ANNOUNCEMENT');
   const [showDialectMenu, setShowDialectMenu] = useState(false);
+  const [showContentTypeMenu, setShowContentTypeMenu] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -56,6 +80,7 @@ export default function GeneratePage() {
       title: 'New Chat',
       messages: [],
       dialect,
+      contentType,
       createdAt: new Date(),
     };
     setChats([newChat, ...chats]);
@@ -111,7 +136,7 @@ export default function GeneratePage() {
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `Generated content in ${DIALECTS[dialect]}:\n\n${message}`,
+        content: `Generated ${CONTENT_TYPES[contentType]} in ${DIALECTS[dialect]}:\n\n${message}`,
         timestamp: new Date(),
       };
 
@@ -268,6 +293,38 @@ export default function GeneratePage() {
             )}
             
             <div className="flex items-end gap-2">
+              {/* Content Type Selector */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowContentTypeMenu(!showContentTypeMenu)}
+                  className="h-12 px-4 rounded-xl border border-border bg-background hover:bg-muted transition-colors flex items-center gap-2 min-w-[180px]"
+                >
+                  {CONTENT_TYPE_ICONS[contentType]}
+                  <span className="text-sm font-medium">{CONTENT_TYPES[contentType]}</span>
+                  <ChevronDown className="w-4 h-4 ml-auto" />
+                </button>
+                
+                {showContentTypeMenu && (
+                  <div className="absolute bottom-full mb-2 left-0 w-56 bg-background border border-border rounded-xl shadow-lg overflow-hidden z-10">
+                    {Object.entries(CONTENT_TYPES).map(([key, label]) => (
+                      <button
+                        key={key}
+                        onClick={() => {
+                          setContentType(key as ContentType);
+                          setShowContentTypeMenu(false);
+                        }}
+                        className={`w-full text-left px-4 py-3 hover:bg-muted transition-colors flex items-center gap-3 ${
+                          contentType === key ? 'bg-primary/10 text-primary' : ''
+                        }`}
+                      >
+                        {CONTENT_TYPE_ICONS[key as ContentType]}
+                        <span>{label}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               {/* Dialect Selector */}
               <div className="relative">
                 <button
@@ -279,7 +336,7 @@ export default function GeneratePage() {
                 </button>
                 
                 {showDialectMenu && (
-                  <div className="absolute bottom-full mb-2 left-0 w-48 bg-background border border-border rounded-xl shadow-lg overflow-hidden">
+                  <div className="absolute bottom-full mb-2 left-0 w-48 bg-background border border-border rounded-xl shadow-lg overflow-hidden z-10">
                     {Object.entries(DIALECTS).map(([key, label]) => (
                       <button
                         key={key}

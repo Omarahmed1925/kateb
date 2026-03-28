@@ -109,8 +109,11 @@ export class UserService {
         slug: workspaceSlug,
         owner_id: user.id,
         plan: DEFAULT_WORKSPACE_CONFIG.PLAN,
+        subscription_status: DEFAULT_WORKSPACE_CONFIG.SUBSCRIPTION_STATUS,
         usage_limit: DEFAULT_WORKSPACE_CONFIG.USAGE_LIMIT,
-        dialect_preference: DEFAULT_WORKSPACE_CONFIG.DIALECT,
+        default_dialect: DEFAULT_WORKSPACE_CONFIG.DIALECT,
+        default_tone: DEFAULT_WORKSPACE_CONFIG.TONE,
+        billing_country: DEFAULT_WORKSPACE_CONFIG.BILLING_COUNTRY,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
