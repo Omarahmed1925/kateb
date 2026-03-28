@@ -54,7 +54,7 @@ export default function DashboardPage() {
             >
               Sign Out
             </Button>
-            <Link href="/dashboard/generate">
+            <Link href="/generate">
               <Button className="btn-modern-primary rounded-xl px-6 font-semibold">
                 Generate Content
               </Button>

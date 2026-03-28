@@ -236,6 +236,14 @@ body {
   animation: slideInLeft 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
 /* ===== MODERN SHADOWS ===== */
 .shadow-modern {
   box-shadow:
