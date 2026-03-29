@@ -265,7 +265,7 @@ export default function GeneratePage() {
 
         {/* Input Area - Fixed at bottom */}
         <div className="border-t border-border/50 p-4 bg-background">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-6xl mx-auto">
             {selectedImage && (
               <div className="mb-3 relative inline-block">
                 <img 
@@ -282,16 +282,17 @@ export default function GeneratePage() {
               </div>
             )}
             
-            <div className="flex items-end gap-2">
+            {/* Single Large Input Bar */}
+            <div className="flex items-center gap-3 px-4 py-2 rounded-2xl border border-border bg-background hover:border-primary/50 transition-colors">
               {/* Content Type Selector */}
               <div className="relative">
                 <button
                   onClick={() => setShowContentTypeMenu(!showContentTypeMenu)}
-                  className="h-12 px-4 rounded-xl border border-border bg-background hover:bg-muted transition-colors flex items-center gap-2 min-w-[180px]"
+                  className="h-10 px-3 rounded-lg hover:bg-muted transition-colors flex items-center gap-2"
                 >
                   {CONTENT_TYPE_ICONS[contentType]}
-                  <span className="text-sm font-medium">{CONTENT_TYPES[contentType]}</span>
-                  <ChevronDown className="w-4 h-4 ml-auto" />
+                  <span className="text-sm font-medium whitespace-nowrap">{CONTENT_TYPES[contentType]}</span>
+                  <ChevronDown className="w-4 h-4" />
                 </button>
                 
                 {showContentTypeMenu && (
@@ -315,13 +316,16 @@ export default function GeneratePage() {
                 )}
               </div>
 
+              {/* Divider */}
+              <div className="h-6 w-px bg-border" />
+
               {/* Dialect Selector */}
               <div className="relative">
                 <button
                   onClick={() => setShowDialectMenu(!showDialectMenu)}
-                  className="h-12 px-4 rounded-xl border border-border bg-background hover:bg-muted transition-colors flex items-center gap-2"
+                  className="h-10 px-3 rounded-lg hover:bg-muted transition-colors flex items-center gap-2"
                 >
-                  <span className="text-sm font-medium">{DIALECTS[dialect]}</span>
+                  <span className="text-sm font-medium whitespace-nowrap">{DIALECTS[dialect]}</span>
                   <ChevronDown className="w-4 h-4" />
                 </button>
                 
@@ -345,6 +349,9 @@ export default function GeneratePage() {
                 )}
               </div>
 
+              {/* Divider */}
+              <div className="h-6 w-px bg-border" />
+
               {/* Image Upload */}
               <div className="relative">
                 <input
@@ -356,14 +363,19 @@ export default function GeneratePage() {
                 />
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="h-12 w-12 rounded-xl border border-border bg-background hover:bg-muted transition-colors flex items-center justify-center"
+                  className="h-10 w-10 rounded-lg hover:bg-muted transition-colors flex items-center justify-center"
+                  title="Upload image"
                 >
                   <ImageIcon className="w-5 h-5" />
                 </button>
               </div>
 
+              {/* Divider */}
+              <div className="h-6 w-px bg-border" />
+
               {/* Message Input */}
-              <textarea
+              <input
+                type="text"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={(e) => {
@@ -373,15 +385,14 @@ export default function GeneratePage() {
                   }
                 }}
                 placeholder="Type your message..."
-                className="flex-1 h-12 px-4 py-3 rounded-xl border border-border bg-background resize-none focus:outline-none focus:ring-2 focus:ring-primary"
-                rows={1}
+                className="flex-1 h-10 px-2 bg-transparent focus:outline-none text-sm"
               />
 
               {/* Send Button */}
               <Button
                 onClick={handleSendMessage}
                 disabled={(!message.trim() && !selectedImage) || isGenerating}
-                className="h-12 w-12 rounded-xl btn-modern-primary p-0"
+                className="h-10 w-10 rounded-lg btn-modern-primary p-0 flex-shrink-0"
               >
                 <Send className="w-5 h-5" />
               </Button>
