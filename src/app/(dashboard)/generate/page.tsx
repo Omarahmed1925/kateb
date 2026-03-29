@@ -265,138 +265,136 @@ export default function GeneratePage() {
 
         {/* Input Area - Fixed at bottom */}
         <div className="border-t border-border/50 p-4 bg-background">
-          <div className="max-w-6xl mx-auto">
-            {selectedImage && (
-              <div className="mb-3 relative inline-block">
-                <img 
-                  src={selectedImage} 
-                  alt="Selected" 
-                  className="h-20 rounded-lg"
-                />
-                <button
-                  onClick={() => setSelectedImage(null)}
-                  className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center"
-                >
-                  ×
-                </button>
-              </div>
-            )}
-            
-            {/* Single Large Input Bar */}
-            <div className="flex items-center gap-3 px-4 py-2 rounded-2xl border border-border bg-background hover:border-primary/50 transition-colors">
-              {/* Content Type Selector */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowContentTypeMenu(!showContentTypeMenu)}
-                  className="h-10 px-3 rounded-lg hover:bg-muted transition-colors flex items-center gap-2"
-                >
-                  {CONTENT_TYPE_ICONS[contentType]}
-                  <span className="text-sm font-medium whitespace-nowrap">{CONTENT_TYPES[contentType]}</span>
-                  <ChevronDown className="w-4 h-4" />
-                </button>
-                
-                {showContentTypeMenu && (
-                  <div className="absolute bottom-full mb-2 left-0 w-56 bg-background border border-border rounded-xl shadow-lg overflow-hidden z-10">
-                    {Object.entries(CONTENT_TYPES).map(([key, label]) => (
-                      <button
-                        key={key}
-                        onClick={() => {
-                          setContentType(key as ContentType);
-                          setShowContentTypeMenu(false);
-                        }}
-                        className={`w-full text-left px-4 py-3 hover:bg-muted transition-colors flex items-center gap-3 ${
-                          contentType === key ? 'bg-primary/10 text-primary' : ''
-                        }`}
-                      >
-                        {CONTENT_TYPE_ICONS[key as ContentType]}
-                        <span>{label}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Divider */}
-              <div className="h-6 w-px bg-border" />
-
-              {/* Dialect Selector */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowDialectMenu(!showDialectMenu)}
-                  className="h-10 px-3 rounded-lg hover:bg-muted transition-colors flex items-center gap-2"
-                >
-                  <span className="text-sm font-medium whitespace-nowrap">{DIALECTS[dialect]}</span>
-                  <ChevronDown className="w-4 h-4" />
-                </button>
-                
-                {showDialectMenu && (
-                  <div className="absolute bottom-full mb-2 left-0 w-48 bg-background border border-border rounded-xl shadow-lg overflow-hidden z-10">
-                    {Object.entries(DIALECTS).map(([key, label]) => (
-                      <button
-                        key={key}
-                        onClick={() => {
-                          setDialect(key as Dialect);
-                          setShowDialectMenu(false);
-                        }}
-                        className={`w-full text-left px-4 py-3 hover:bg-muted transition-colors ${
-                          dialect === key ? 'bg-primary/10 text-primary' : ''
-                        }`}
-                      >
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Divider */}
-              <div className="h-6 w-px bg-border" />
-
-              {/* Image Upload */}
-              <div className="relative">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageSelect}
-                  className="hidden"
-                />
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="h-10 w-10 rounded-lg hover:bg-muted transition-colors flex items-center justify-center"
-                  title="Upload image"
-                >
-                  <ImageIcon className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Divider */}
-              <div className="h-6 w-px bg-border" />
-
-              {/* Message Input */}
-              <input
-                type="text"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSendMessage();
-                  }
-                }}
-                placeholder="Type your message..."
-                className="flex-1 h-10 px-2 bg-transparent focus:outline-none text-sm"
+          {selectedImage && (
+            <div className="mb-3 px-4 relative inline-block">
+              <img 
+                src={selectedImage} 
+                alt="Selected" 
+                className="h-20 rounded-lg"
               />
-
-              {/* Send Button */}
-              <Button
-                onClick={handleSendMessage}
-                disabled={(!message.trim() && !selectedImage) || isGenerating}
-                className="h-10 w-10 rounded-lg btn-modern-primary p-0 flex-shrink-0"
+              <button
+                onClick={() => setSelectedImage(null)}
+                className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center"
               >
-                <Send className="w-5 h-5" />
-              </Button>
+                ×
+              </button>
             </div>
+          )}
+          
+          {/* Single Large Input Bar - Full Width */}
+          <div className="flex items-center gap-3 px-4 py-2 rounded-2xl border border-border bg-background hover:border-primary/50 transition-colors mx-4">
+            {/* Content Type Selector */}
+            <div className="relative">
+              <button
+                onClick={() => setShowContentTypeMenu(!showContentTypeMenu)}
+                className="h-10 px-3 rounded-lg hover:bg-muted transition-colors flex items-center gap-2"
+              >
+                {CONTENT_TYPE_ICONS[contentType]}
+                <span className="text-sm font-medium whitespace-nowrap">{CONTENT_TYPES[contentType]}</span>
+                <ChevronDown className="w-4 h-4" />
+              </button>
+              
+              {showContentTypeMenu && (
+                <div className="absolute bottom-full mb-2 left-0 w-56 bg-background border border-border rounded-xl shadow-lg overflow-hidden z-10">
+                  {Object.entries(CONTENT_TYPES).map(([key, label]) => (
+                    <button
+                      key={key}
+                      onClick={() => {
+                        setContentType(key as ContentType);
+                        setShowContentTypeMenu(false);
+                      }}
+                      className={`w-full text-left px-4 py-3 hover:bg-muted transition-colors flex items-center gap-3 ${
+                        contentType === key ? 'bg-primary/10 text-primary' : ''
+                      }`}
+                    >
+                      {CONTENT_TYPE_ICONS[key as ContentType]}
+                      <span>{label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Divider */}
+            <div className="h-6 w-px bg-border" />
+
+            {/* Dialect Selector */}
+            <div className="relative">
+              <button
+                onClick={() => setShowDialectMenu(!showDialectMenu)}
+                className="h-10 px-3 rounded-lg hover:bg-muted transition-colors flex items-center gap-2"
+              >
+                <span className="text-sm font-medium whitespace-nowrap">{DIALECTS[dialect]}</span>
+                <ChevronDown className="w-4 h-4" />
+              </button>
+              
+              {showDialectMenu && (
+                <div className="absolute bottom-full mb-2 left-0 w-48 bg-background border border-border rounded-xl shadow-lg overflow-hidden z-10">
+                  {Object.entries(DIALECTS).map(([key, label]) => (
+                    <button
+                      key={key}
+                      onClick={() => {
+                        setDialect(key as Dialect);
+                        setShowDialectMenu(false);
+                      }}
+                      className={`w-full text-left px-4 py-3 hover:bg-muted transition-colors ${
+                        dialect === key ? 'bg-primary/10 text-primary' : ''
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Divider */}
+            <div className="h-6 w-px bg-border" />
+
+            {/* Image Upload */}
+            <div className="relative">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageSelect}
+                className="hidden"
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="h-10 w-10 rounded-lg hover:bg-muted transition-colors flex items-center justify-center"
+                title="Upload image"
+              >
+                <ImageIcon className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Divider */}
+            <div className="h-6 w-px bg-border" />
+
+            {/* Message Input */}
+            <input
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendMessage();
+                }
+              }}
+              placeholder="Type your message..."
+              className="flex-1 h-10 px-2 bg-transparent focus:outline-none text-sm"
+            />
+
+            {/* Send Button */}
+            <Button
+              onClick={handleSendMessage}
+              disabled={(!message.trim() && !selectedImage) || isGenerating}
+              className="h-10 w-10 rounded-lg btn-modern-primary p-0 flex-shrink-0"
+            >
+              <Send className="w-5 h-5" />
+            </Button>
           </div>
         </div>
       </div>
