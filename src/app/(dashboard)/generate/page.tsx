@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { useAuth } from '@/lib/firebase/auth-context';
 import { Button } from '@/components/ui/button';
 import { 
   ChevronDown, 
@@ -60,7 +59,6 @@ const CONTENT_TYPE_ICONS: Record<ContentType, React.ReactNode> = {
 };
 
 export default function GeneratePage() {
-  const { user } = useAuth();
   const [chats, setChats] = useState<Chat[]>([]);
   const [activeChat, setActiveChat] = useState<string | null>(null);
   const [message, setMessage] = useState('');
@@ -157,7 +155,7 @@ export default function GeneratePage() {
   };
 
   return (
-    <div className="h-screen flex bg-background">
+    <div className="h-screen flex bg-background overflow-hidden">
       {/* Sidebar - Chat History */}
       <div className="w-64 border-r border-border/50 flex flex-col bg-muted/30">
         <div className="p-4 border-b border-border/50">
@@ -205,15 +203,7 @@ export default function GeneratePage() {
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <div className="h-16 border-b border-border/50 flex items-center justify-between px-6 bg-background/80 backdrop-blur-xl">
-          <h1 className="text-xl font-bold">Generate Content</h1>
-          <div className="text-sm text-muted-foreground">
-            {user?.displayName || user?.email}
-          </div>
-        </div>
-
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-6">
           {!currentChat || currentChat.messages.length === 0 ? (
@@ -224,12 +214,12 @@ export default function GeneratePage() {
                 </div>
                 <h2 className="text-2xl font-bold mb-2">Start Creating Content</h2>
                 <p className="text-muted-foreground">
-                  Choose your dialect and start chatting with AI to generate amazing Arabic content
+                  Choose your content type and dialect, then start chatting with AI to generate amazing Arabic content
                 </p>
               </div>
             </div>
           ) : (
-            <div className="max-w-3xl mx-auto space-y-4">
+            <div className="max-w-4xl mx-auto space-y-4">
               {currentChat.messages.map(msg => (
                 <div
                   key={msg.id}
@@ -273,9 +263,9 @@ export default function GeneratePage() {
           )}
         </div>
 
-        {/* Input Area */}
+        {/* Input Area - Fixed at bottom */}
         <div className="border-t border-border/50 p-4 bg-background">
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-4xl mx-auto">
             {selectedImage && (
               <div className="mb-3 relative inline-block">
                 <img 
