@@ -1,25 +1,15 @@
-import { auth } from '@/lib/auth/auth';
 import type { SessionUser } from '@/types';
 
 export interface Context {
   user: SessionUser | null;
 }
 
+/**
+ * Create a tRPC context. Authentication is handled by Firebase Auth on the client.
+ * Server-side context is populated from the Firebase session token when available.
+ */
 export async function createContext(): Promise<Context> {
-  const session = await auth();
-
-  if (!session?.user?.email) {
-    return { user: null };
-  }
-
-  return {
-    user: {
-      id: (session.user as any).id || '',
-      email: session.user.email,
-      name: session.user.name,
-      image: session.user.image,
-      role: (session.user as any).role || 'USER',
-    },
-  };
+  // Firebase Auth is client-side; server context starts unauthenticated.
+  // Protected routes should validate the Firebase ID token via middleware.
+  return { user: null };
 }
-

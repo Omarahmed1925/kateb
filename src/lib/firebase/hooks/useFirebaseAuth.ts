@@ -11,7 +11,6 @@ import {
   updateProfile,
 } from 'firebase/auth';
 import { auth } from '../client';
-import { AUTH_ROUTES } from '@/lib/constants/auth';
 
 interface UseFirebaseAuthReturn {
   user: User | null;

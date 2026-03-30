@@ -151,3 +151,24 @@ export interface Notification {
   read_at: string | null;
   created_at: string;
 }
+
+// Brand Assistant Types
+export type BrandDialect = 'EGYPTIAN' | 'EMIRATI' | 'SAUDI' | 'KUWAITI';
+
+export interface BrandAnalysis {
+  brandName: string;
+  productCategory: string;
+  visualDescription: string;
+  targetAudience: string;
+  marketingAngles: string[];
+  brandPersonality: string;
+  keyColors: string[];
+  suggestedQuestions: string[];
+}
+
+export interface BrandChatMessage {
+  role: 'user' | 'model';
+  content: string;
+  imageBase64?: string;
+  imageMimeType?: string;
+}

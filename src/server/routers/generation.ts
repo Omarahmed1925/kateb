@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server';
-import { db } from '@/lib/db/client';
+import { supabase } from '@/lib/db/client';
 import { generationSchema } from '@/lib/validations';
 import { protectedProcedure, router } from '@/server/trpc';
 import { generateContent } from '@/lib/ai/generate';
@@ -7,17 +7,15 @@ import { z } from 'zod';
 
 export const generationRouter = router({
   generate: protectedProcedure
-    .input(z.object({ workspaceId: z.string().cuid(), input: generationSchema }))
+    .input(z.object({ workspaceId: z.string(), input: generationSchema }))
     .mutation(async ({ ctx, input }) => {
       // Check workspace membership
-      const member = await db.workspaceMember.findUnique({
-        where: {
-          workspaceId_userId: {
-            workspaceId: input.workspaceId,
-            userId: ctx.user!.id,
-          },
-        },
-      });
+      const { data: member } = await supabase
+        .from('workspace_members')
+        .select('*')
+        .eq('workspace_id', input.workspaceId)
+        .eq('user_id', ctx.user!.id)
+        .single();
 
       if (!member) {
         throw new TRPCError({
@@ -34,26 +32,24 @@ export const generationRouter = router({
         );
 
         return result;
-      } catch (error: any) {
+      } catch (error: unknown) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: error?.message || 'Failed to generate content',
+          message: error instanceof Error ? error.message : 'Failed to generate content',
         });
       }
     }),
 
   list: protectedProcedure
-    .input(z.object({ workspaceId: z.string().cuid() }))
+    .input(z.object({ workspaceId: z.string() }))
     .query(async ({ ctx, input }) => {
       // Verify membership
-      const member = await db.workspaceMember.findUnique({
-        where: {
-          workspaceId_userId: {
-            workspaceId: input.workspaceId,
-            userId: ctx.user!.id,
-          },
-        },
-      });
+      const { data: member } = await supabase
+        .from('workspace_members')
+        .select('*')
+        .eq('workspace_id', input.workspaceId)
+        .eq('user_id', ctx.user!.id)
+        .single();
 
       if (!member) {
         throw new TRPCError({
@@ -62,34 +58,27 @@ export const generationRouter = router({
         });
       }
 
-      const generations = await db.generation.findMany({
-        where: {
-          workspaceId: input.workspaceId,
-          deletedAt: null,
-        },
-        include: {
-          user: { select: { id: true, name: true, email: true } },
-          _count: { select: { approvalLinks: true } },
-        },
-        orderBy: { createdAt: 'desc' },
-        take: 50,
-      });
+      const { data: generations } = await supabase
+        .from('generations')
+        .select('*, users:created_by(id, name, email)')
+        .eq('workspace_id', input.workspaceId)
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false })
+        .limit(50);
 
       return generations;
     }),
 
   getById: protectedProcedure
-    .input(z.object({ workspaceId: z.string().cuid(), generationId: z.string().cuid() }))
+    .input(z.object({ workspaceId: z.string(), generationId: z.string() }))
     .query(async ({ ctx, input }) => {
       // Verify membership
-      const member = await db.workspaceMember.findUnique({
-        where: {
-          workspaceId_userId: {
-            workspaceId: input.workspaceId,
-            userId: ctx.user!.id,
-          },
-        },
-      });
+      const { data: member } = await supabase
+        .from('workspace_members')
+        .select('*')
+        .eq('workspace_id', input.workspaceId)
+        .eq('user_id', ctx.user!.id)
+        .single();
 
       if (!member) {
         throw new TRPCError({
@@ -98,15 +87,13 @@ export const generationRouter = router({
         });
       }
 
-      const generation = await db.generation.findUnique({
-        where: { id: input.generationId },
-        include: {
-          approvalLinks: true,
-          versions: { orderBy: { versionNumber: 'asc' } },
-        },
-      });
+      const { data: generation } = await supabase
+        .from('generations')
+        .select('*')
+        .eq('id', input.generationId)
+        .single();
 
-      if (!generation || generation.workspaceId !== input.workspaceId) {
+      if (!generation || generation.workspace_id !== input.workspaceId) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Generation not found',
@@ -117,17 +104,15 @@ export const generationRouter = router({
     }),
 
   delete: protectedProcedure
-    .input(z.object({ workspaceId: z.string().cuid(), generationId: z.string().cuid() }))
+    .input(z.object({ workspaceId: z.string(), generationId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       // Verify membership and admin role
-      const member = await db.workspaceMember.findUnique({
-        where: {
-          workspaceId_userId: {
-            workspaceId: input.workspaceId,
-            userId: ctx.user!.id,
-          },
-        },
-      });
+      const { data: member } = await supabase
+        .from('workspace_members')
+        .select('*')
+        .eq('workspace_id', input.workspaceId)
+        .eq('user_id', ctx.user!.id)
+        .single();
 
       if (!member || (member.role !== 'OWNER' && member.role !== 'ADMIN')) {
         throw new TRPCError({
@@ -136,12 +121,11 @@ export const generationRouter = router({
         });
       }
 
-      await db.generation.update({
-        where: { id: input.generationId },
-        data: { deletedAt: new Date() },
-      });
+      await supabase
+        .from('generations')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', input.generationId);
 
       return { success: true };
     }),
 });
-

@@ -127,6 +127,29 @@ export const createCheckoutSessionSchema = z.object({
   cancelUrl: z.string().url(),
 });
 
+// Brand Assistant
+export const brandChatMessageSchema = z.object({
+  role: z.enum(['user', 'model']),
+  content: z.string(),
+  imageBase64: z.string().optional(),
+  imageMimeType: z.string().optional(),
+});
+
+export const brandChatSchema = z.object({
+  messages: z.array(brandChatMessageSchema).min(1),
+  dialect: z.enum(['EGYPTIAN', 'EMIRATI', 'SAUDI', 'KUWAITI']),
+  brandContext: z.string().optional(),
+  imageBase64: z.string().optional(),
+  imageMimeType: z
+    .enum(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+    .optional(),
+});
+
+export const brandImageAnalysisSchema = z.object({
+  imageBase64: z.string().min(1, 'Image data is required'),
+  mimeType: z.enum(['image/jpeg', 'image/png', 'image/webp', 'image/gif']),
+});
+
 // Types inferred from schemas
 export type CreateUserInput = z.infer<typeof createUserSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
